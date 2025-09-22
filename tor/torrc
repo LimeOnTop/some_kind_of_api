@@ -1,0 +1,6 @@
+// Конфигурация Tor для работы с API и Caddy
+SocksPort 0.0.0.0:9050
+
+// Настройка скрытого сервиса для доступа к Caddy через Tor
+HiddenServiceDir /var/lib/tor/hidden_service/
+HiddenServicePort 80 caddy:80

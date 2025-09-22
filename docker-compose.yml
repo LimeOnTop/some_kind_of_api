@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./api
+    image: some_kind_of_api:latest
+    container_name: some_kind_of_api
+    networks:
+      - appnet
+    environment:
+      - ENV=production
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: some_kind_of_api_caddy
+    networks:
+      - appnet
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  tor:
+    build: ./tor
+    container_name: tor
+    networks:
+      - appnet
+    ports:
+      - "9050:9050"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
